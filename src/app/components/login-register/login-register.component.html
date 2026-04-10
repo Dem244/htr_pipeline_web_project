@@ -1,0 +1,79 @@
+<div class="auth-popup">
+  <div class="popup-header">
+    <h2>
+      {{ isResetPwMode ? 'Passwort zurücksetzen' : (isLoginMode ? 'Anmelden' : 'Registrieren') }}
+    </h2>
+    <button class="close-btn" (click)="close()" aria-label="Schließen">×</button>
+  </div>
+
+  <!-- Reset-Passwort-Modus -->
+  <form *ngIf="isResetPwMode" (ngSubmit)="resetPassword()" class="auth-form">
+    <mat-form-field appearance="outline">
+      <mat-label>E-Mail</mat-label>
+      <input matInput type="email" [(ngModel)]="email" name="email" required>
+    </mat-form-field>
+
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <button mat-raised-button type="submit" class="submit-btn" [disabled]="loading">
+      {{ loading ? 'Wird gesendet...' : 'Link senden' }}
+    </button>
+
+    <div class="toggle-mode">
+      <button type="button" class="link-btn" (click)="cancelReset()">
+        Zurück zur Anmeldung
+      </button>
+    </div>
+  </form>
+
+  <!-- Login/Register-Modus -->
+  <form *ngIf="!isResetPwMode" (ngSubmit)="onSubmit()" class="auth-form">
+    <mat-form-field appearance="outline">
+      <mat-label>E-Mail</mat-label>
+      <input matInput type="email" [(ngModel)]="email" name="email" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Passwort</mat-label>
+      <input matInput type="password" [(ngModel)]="password" name="password"
+             (ngModelChange)="onPasswordChange()" required>
+    </mat-form-field>
+    <div class="password-requirements" *ngIf="!isLoginMode && password">
+      <div class="requirement" [class.touched]="password.length > 0 && !passwordVal.minLength" [class.valid]="passwordVal.minLength">
+        <span class="icon">{{ passwordVal.minLength ? '✓' : '○' }}</span>
+        Mindestens 8 Zeichen
+      </div>
+      <div class="requirement" [class.touched]="password.length > 0 && !passwordVal.uppercase" [class.valid]="passwordVal.uppercase">
+        <span class="icon">{{ passwordVal.uppercase ? '✓' : '○' }}</span>
+        Mindestens 1 Großbuchstabe
+      </div>
+      <div class="requirement" [class.touched]="password.length > 0 && !passwordVal.hasNum" [class.valid]="passwordVal.hasNum">
+        <span class="icon">{{ passwordVal.hasNum ? '✓' : '○' }}</span>
+        Mindestens 1 Ziffer
+      </div>
+      <div class="requirement" [class.touched]="password.length > 0 && !passwordVal.hasSpecial" [class.valid]="passwordVal.hasSpecial">
+        <span class="icon">{{ passwordVal.hasSpecial ? '✓' : '○' }}</span>
+        Mindestens 1 Sonderzeichen
+      </div>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <button mat-raised-button type="submit" class="submit-btn" [disabled]="loading">
+      {{ loading ? 'Lädt...' : (isLoginMode ? 'Anmelden' : 'Registrieren') }}
+    </button>
+
+    <div class="toggle-mode">
+      {{ isLoginMode ? 'Noch kein Account?' : 'Bereits registriert?' }}
+      <button type="button" class="link-btn" (click)="toggleMode()">
+        {{ isLoginMode ? 'Registrieren' : 'Anmelden' }}
+      </button>
+    </div>
+
+    <div class="toggle-mode" *ngIf="isLoginMode">
+      <button type="button" class="link-btn" (click)="showResetMode()">
+        Passwort vergessen?
+      </button>
+    </div>
+  </form>
+</div>

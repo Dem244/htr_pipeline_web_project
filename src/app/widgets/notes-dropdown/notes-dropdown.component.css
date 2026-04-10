@@ -1,0 +1,212 @@
+.notes-dropdown {
+  position: relative;
+}
+
+.notes-toggle {
+  color: #333;
+}
+
+::ng-deep .notes-menu {
+  width: 400px !important;
+  max-height: 600px;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+}
+
+.menu-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+.create-note-btn {
+  color: #1976d2;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.folder-group {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.folder-header:hover {
+  background-color: #f5f5f5;
+}
+
+.expand-icon {
+  margin-right: 8px;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.folder-name {
+  font-weight: 500;
+  font-size: 15px;
+  color: #333;
+  flex-grow: 1;
+}
+
+.note-count {
+  font-size: 12px;
+  color: #999;
+  margin-left: 8px;
+}
+
+.notes-list {
+  background-color: #fafafa;
+  padding: 4px 0;
+}
+
+.note-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 8px 48px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.note-item:last-child {
+  border-bottom: none;
+}
+
+.note-item:hover {
+  background-color: #f0f0f0;
+}
+
+.note-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.note-title {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.delete-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.note-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+.delete-btn:hover mat-icon {
+  color: #d32f2f;
+}
+
+.note-date {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+::ng-deep .mat-mdc-menu-panel.note-actions-menu {
+  min-width: 160px !important;
+  padding: 8px !important;
+}
+
+::ng-deep .note-actions-menu .mat-mdc-menu-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 0 !important;
+}
+
+::ng-deep .note-actions-menu .mat-mdc-menu-item {
+  border-radius: 8px !important;
+  padding: 10px 16px !important;
+  height: auto !important;
+  min-height: 40px !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+::ng-deep .note-actions-menu .edit-action {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+::ng-deep .note-actions-menu .edit-action mat-icon {
+  color: white !important;
+}
+
+::ng-deep .note-actions-menu .edit-action:hover {
+  background-color: #1d4ed8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+::ng-deep .note-actions-menu .delete-action {
+  background-color: #ef4444 !important;
+  color: black !important;
+}
+
+::ng-deep .note-actions-menu .delete-action mat-icon {
+  color: black !important;
+}
+
+::ng-deep .note-actions-menu .delete-action:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+

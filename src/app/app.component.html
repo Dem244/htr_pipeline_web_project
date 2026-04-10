@@ -1,0 +1,124 @@
+<!--Quelle: https://www.npmjs.com/package/ngx-markdown-->
+<!--https://www.youtube.com/watch?v=VoszvUMVutg-->
+<div class="app-shell">
+  <div *ngIf="loadingService.loading$ | async" class="upload-overlay">
+    <div class="upload-spinner-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="upload-text">Texterkennung wird durchgeführt ...</p>
+    </div>
+  </div>
+  <app-sidebar
+    *ngIf="authService.user$ | async"
+    [noteId]="currentNoteId"
+    [isOpen]="sidebarOpen"
+    (closeSidebar)="toggleSidebar()"
+  ></app-sidebar>
+  <header class="topbar">
+
+    <div class="brand">
+      <div class="logo" aria-hidden="true">HTR</div>
+      <div class="brand-text">
+        <div class="app-name">{{ title }}</div>
+      </div>
+      <app-notes-dropdown
+        *ngIf="authService.user$ | async"
+        [class.pulse-hint]="!hasAnyNotes"
+        (noteSelected)="loadNote($event.noteId, $event.content)">
+      </app-notes-dropdown>
+    </div>
+
+    <div class="current-note-path" *ngIf="currentNotePath">
+      <mat-icon class="path-icon">folder</mat-icon>
+      <span class="path-text">{{ currentNotePath }}</span>
+    </div>
+
+    <div class="save-hint" *ngIf="hasContent && !(authService.user$ | async)">
+      <span class="hint-icon">💡</span>
+      <span class="hint-text">Melde dich an, um deine Notiz zu speichern</span>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Status-Anzeige -->
+      <span *ngIf="currentNoteId" class="auto-save-indicator">
+         Autosave aktiv
+      </span>
+
+      <button class="pdf-button" mat-raised-button class="primary-btn export-btn" (click)="downloadPdf()">
+        Als PDF exportieren
+      </button>
+
+      <ng-container *ngIf="authService.user$ | async as user; else notLoggedIn">
+        <span class="user-email">{{ user.email }}</span>
+        <button mat-button (click)="logout()">Abmelden</button>
+      </ng-container>
+      <ng-template #notLoggedIn>
+        <button mat-button class="login-btn" (click)="openAuthPopup()">
+          Anmelden
+        </button>
+      </ng-template>
+    </div>
+  </header>
+
+
+  <main class="content">
+    <ng-container *ngIf="loadingLastNote">
+      <div class="loading-indicator">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Notiz wird geladen...</p>
+      </div>
+    </ng-container>
+
+
+    <ng-container *ngIf="!loadingLastNote && (!(authService.user$ | async) || hasAnyNotes)">
+      <section class="editor-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span>Editor</span>
+
+          </div>
+
+          <div class="panel-body">
+            <textarea class="editor" [(ngModel)]="markdown" (ngModelChange)="onMarkdownChange()"></textarea>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span>Vorschau</span>
+
+          </div>
+
+          <div class="panel-body">
+            <div #markDownPdf class="preview">
+              <markdown [data]="markdown" katex [katexOptions]="options"></markdown>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom-row">
+        <div class="card">
+          <div class="card-title">Upload</div>
+          <div class="card-subtitle">Bild hochladen → Markdown generieren</div>
+
+          <app-upload #uploadRef (uploadFinished)="onUploadFinished($event)"></app-upload>
+        </div>
+      </section>
+    </ng-container>
+    <!--Wenn keine letzte Notiz gefunden wurde bzw. der angemeldetete Nutzer keine Notizen hat-->
+    <section *ngIf="!loadingLastNote && (authService.user$ | async) && !hasAnyNotes" class="empty-workspace">
+      <div class="empty-content">
+        <div class="empty-icon"></div>
+        <h2>Hmm, ziemlich leer hier! 🤔</h2>
+        <p>Zeit, deine Gedanken festzuhalten – erstelle doch eine neue Notiz!</p>
+      </div>
+    </section>
+
+  </main>
+
+  <app-help-popup></app-help-popup>
+</div>
+
+
+
+

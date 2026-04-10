@@ -1,0 +1,18 @@
+<div class="help-wrapper">
+
+  <div class="help-icon" (click)="toggle()">?</div>
+
+  <!-- Overlay -->
+  <div
+    class="overlay"
+    *ngIf="open"
+    (click)="close()">
+  </div>
+
+  <!-- Popup -->
+  <div class="help-popup" *ngIf="open">
+    <textarea class="variable-textarea" [(ngModel)]="helpText" readonly></textarea>
+    <markdown [data]="helpText"></markdown>
+  </div>
+
+</div>

@@ -1,0 +1,22 @@
+<!--https://www.youtube.com/watch?v=vpESLwzHz0I-->
+<div class="upload-wrapper">
+  @if (!file) {
+    <div class="file-container"
+      (dragover)="onDragOver($event)"
+      (drop)="getFile($event)">
+      <label for="fileInput" class="file-label">
+        Notizen hier reinziehen oder klicken
+      </label>
+      <input id="fileInput" type="file" class="file-input" accept="image/*" (change)="getFile($event)">
+    </div>
+  }
+
+  @if (file) {
+    <div>
+      Dateiname: {{file.name}} <br />
+      <button (click)="file=undefined">Datei löschen</button>
+    </div>
+  }
+
+</div>
+

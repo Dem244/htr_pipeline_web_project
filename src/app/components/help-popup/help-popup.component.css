@@ -1,0 +1,97 @@
+.help-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+
+/* Fragezeichen */
+.help-icon {
+  width: 48px;
+  height: 48px;
+
+  background: #095cb6;
+  color: white;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  font-size: 22px;
+
+  touch-action: manipulation; /* verbessert Touch-Reaktion */
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 9998;
+}
+
+/* Popup Desktop / Tablet */
+.help-popup {
+  position: relative;
+
+  width: 380px;
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  background: white;
+  padding: 15px;
+
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+
+  z-index: 9999;
+}
+
+/* Textarea / Inhalt */
+.variable-textarea {
+  width: 100%;
+  height: 400px;
+
+  resize: none;
+
+  overflow-y: auto;
+
+  font-family: monospace;
+  font-size: 14px;
+
+  border-radius: 6px;
+  padding: 10px;
+}
+
+/* --------------------------
+   ✅ Mobilgeräte
+---------------------------*/
+
+@media (max-width: 600px) {
+
+  .help-wrapper {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .help-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .help-popup {
+    width: calc(100vw - 20px);   /* fast volle Breite */
+    max-height: 85vh;
+    padding: 12px;
+  }
+
+  .variable-textarea {
+    height: 55vh;   /* passt sich besser an */
+    font-size: 13px;
+  }
+}
+

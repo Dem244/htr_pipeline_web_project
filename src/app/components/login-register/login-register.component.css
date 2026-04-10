@@ -1,0 +1,102 @@
+.auth-popup {
+  width: 400px;
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.popup-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 14px;
+  padding: 8px;
+  background: #fee2e2;
+  border-radius: 8px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
+.toggle-mode {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;margin-left: 4px;
+}
+
+.password-requirements {
+  margin-top: -8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.requirement:last-child {
+  margin-bottom: 0;
+}
+
+.requirement.valid {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.requirement .icon {
+  font-size: 16px;
+  font-weight: bold;
+  width: 18px;
+  text-align: center;
+}
+
+.requirement.valid .icon {
+  color: #10b981;
+}
+

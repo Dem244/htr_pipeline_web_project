@@ -1,0 +1,77 @@
+<div class="sidebar" [class.open]="isOpen">
+
+  <button
+    mat-icon-button
+    (click)="toggle()"
+    class="toggle-btn"
+    [class.collapsed]="!isOpen"
+  >
+    <mat-icon>{{ isOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+  </button>
+  <div class="sidebar-header">
+    <h3>Bilder</h3>
+  </div>
+
+  <div class="sidebar-content">
+    <div
+      class="drop-zone"
+      [class.dragging]="isDragging"
+      [class.disabled]="!noteId"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="noteId && fileInput.click()"
+    >
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        (change)="onFileSelected($event)"
+        #fileInput
+        style="display: none"
+      />
+
+      <div class="drop-zone-content" *ngIf="!isUploading">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p class="drop-text" *ngIf="noteId">Bild hier ablegen</p>
+        <p class="drop-text" *ngIf="noteId">oder klicken zum Auswählen</p>
+        <p class="drop-hint">Max. 3MB pro Bild</p>
+        <p class="drop-text error" *ngIf="!noteId">Öffne eine Notiz, um Bilder hochzuladen</p>
+      </div>
+
+      <div class="uploading-state" *ngIf="isUploading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Wird hochgeladen...</p>
+      </div>
+    </div>
+
+    <div class="images-list" *ngIf="images.length > 0">
+      <div class="image-item" *ngFor="let image of images">
+        <mat-icon class="file-icon">image</mat-icon>
+        <span class="file-name">{{ image.name }}</span>
+        <div class="item-actions">
+          <button
+            mat-icon-button
+            (click)="copyImageMarkdown(image.url, image.name)"
+            title="Markdown-Link kopieren"
+            class="action-btn copy-btn"
+
+          ><mat-icon>content_copy</mat-icon></button>
+          <button
+            mat-icon-button
+            (click)="deleteImage(image.url)"
+            title="Löschen"
+            class="action-btn delete-btn"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="empty-state" *ngIf="images.length === 0 && noteId && !isUploading">
+      <mat-icon>image</mat-icon>
+      <p>Noch keine Bilder hochgeladen</p>
+    </div>
+  </div>
+</div>

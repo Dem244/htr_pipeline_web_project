@@ -1,0 +1,21 @@
+<div class="overlay">
+  <div class="modal">
+    <canvas #canvas></canvas>
+
+    <!-- Kontextmenü -->
+    <div
+      *ngIf="showContextMenu"
+      class="context-menu"
+      [style.top.px]="contextMenuY"
+      [style.left.px]="contextMenuX"
+    >
+      <button (click)="deleteSelectedMask()">Maske löschen</button>
+    </div>
+
+    <div class="button-group">
+      <button mat-raised-button (click)="closeEditor()">Schließen</button>
+      <!--<button mat-raised-button (click)="runOCR()">Dokument digitalisieren</button>-->
+    </div>
+    <!--<app-loading-indicator></app-loading-indicator>-->
+  </div>
+</div>

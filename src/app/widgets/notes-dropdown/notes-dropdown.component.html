@@ -1,0 +1,70 @@
+<div class="notes-dropdown">
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="notesMenu"
+    class="notes-toggle">
+    <mat-icon>folder_open</mat-icon>
+  </button>
+
+  <mat-menu #notesMenu="matMenu" class="notes-menu">
+    <div class="menu-header" (click)="$event.stopPropagation()">
+      <h3>Meine Notizen</h3>
+      <button
+        mat-icon-button
+        (click)="openCreateNoteDialog()"
+        class="create-note-btn">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div *ngIf="folders.length === 0" class="empty-state">
+      <mat-icon>description</mat-icon>
+      <p>Noch keine Notizen vorhanden</p>
+    </div>
+
+    <div *ngFor="let folder of folders" class="folder-group">
+      <div class="folder-header" (click)="toggleFolder(folder); $event.stopPropagation()">
+        <mat-icon class="expand-icon">
+          {{ folder.isExpanded ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+        <span class="folder-name">{{ folder.folderName }}</span>
+        <span class="note-count">({{ folder.notes.length }})</span>
+      </div>
+
+      <div *ngIf="folder.isExpanded" class="notes-list">
+        <div
+          *ngFor="let note of folder.notes"
+          class="note-item"
+          (click)="selectNote(note)">
+          <div class="note-content">
+            <span class="note-title" [title]="note.title">
+              {{ note.title }}
+            </span>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="noteActionsMenu"
+              (click)="$event.stopPropagation()"
+              class="actions-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #noteActionsMenu="matMenu" class="note-actions-menu">
+              <button mat-menu-item (click)="editNote(note, $event)" class="edit-action">
+                <mat-icon>edit</mat-icon>
+                <span>Bearbeiten</span>
+              </button>
+              <button mat-menu-item (click)="deleteNote(note.id, note.title, $event)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Löschen</span>
+              </button>
+            </mat-menu>
+          </div>
+          <span class="note-date">
+            {{ convertToDate(note.openedAt) | date:'dd.MM.yyyy, HH:mm' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+</div>

@@ -1,0 +1,29 @@
+# Flask
+#flask==3.0.3
+#flask-cors==4.0.0
+
+# FastAPI
+fastapi
+uvicorn[standard]
+python-multipart
+
+# TrOCR
+transformers==4.45.2
+sentence-transformers==3.1.1
+Pillow==10.0.0
+tiktoken
+protobuf
+huggingface_hub[hf_xet]
+datasets==3.1.0
+sentencepiece
+
+# YOLO
+ultralytics
+torch>=2.2.0
+numpy
+
+# Crop-Processing
+Shapely>=2.0.1
+
+# Others
+opencv-python

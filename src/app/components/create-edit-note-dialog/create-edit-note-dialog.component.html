@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Neue Notiz erstellen</h2>
+<mat-dialog-content>
+  <form [formGroup]="noteForm">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ordner auswählen</mat-label>
+      <mat-select formControlName="folder" [disabled]="!hasExistingFolders">
+        <mat-option value="" [disabled]="true">Keine Kategorie vorhanden</mat-option>
+        <mat-option *ngFor="let folder of existingFolders" [value]="folder">
+          {{ folder }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="!hasExistingFolders">
+        Noch keine Kategorien vorhanden
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Neue Kategorie erstellen</mat-label>
+      <input matInput formControlName="newFolder" placeholder="Kategoriename eingeben">
+      <mat-error *ngIf="noteForm.get('newFolder')?.hasError('minlength')">
+        Mindestens 3 Zeichen erforderlich
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('newFolder')?.hasError('folderExists')">
+        Diese Kategorie existiert bereits
+      </mat-error>
+      <mat-hint>Leer lassen, um vorhandene Kategorie zu verwenden</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notiz-Titel</mat-label>
+      <input matInput formControlName="title" placeholder="Titel eingeben">
+      <mat-error *ngIf="noteForm.get('title')?.hasError('required')">
+        Titel erforderlich
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('title')?.hasError('minlength')">
+        Mindestens 3 Zeichen
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('title')?.hasError('titleDuplicate')">
+        Ein Dokument mit diesem Namen existiert bereits in dieser Kategorie
+      </mat-error>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid">
+    Erstellen
+  </button>
+</mat-dialog-actions>
