@@ -6,9 +6,16 @@ Dieses Projekt implementiert eine modulare HTR-Pipeline (Handwritten Text Recogn
 Die Pipeline ist in eine lokale Webanwendung integriert, bestehend aus einem Angular-Frontend und einem FastAPI-Backend.
 
 ## Modelle
-Die trainierten YOLO- und TrOCR-Modelle können hier heruntergeladen werden: [Link zu den Modellen](#)
+Das trainiere YOLO-Modell ist kann hier runtergeladen werden [Link zm YOLO Modell](#)
+
+Die fine-tuned TrOCR-Modelle können ebenfalls runtergeladen werden [Link zu den TrOCR-Modellen](#) , sind jedoch aktuell noch verbesserungswürdig. Für bessere Ergebnisse können alternativ die TrOCR-Modelle der FH-SWF genutzt werden: 
+
+[FH-SWF-Modelle](https://huggingface.co/fhswf)
 
 Die Modellordner vor dem Start der Anwendung im backend-Verzeichnis ablegen!
+
+
+
 
 ## Postprocessing-Parameter:
 Wichtige Postprocessing-Parameter, einschließlich Confidence-Threshold und IoU-Threshold für Non-Maximum Suppression (NMS) sowie weitere Parameter für nachgelagerte Verarbeitungsschritte, können direkt im Quellcode flexibel an deine Eingabedaten angepasst werden, Beispiel:
@@ -17,13 +24,20 @@ yolo.predict(img, conf=0.5, iou=0.7, agnostic_nms=True) # conf and iou can be ch
 ```
 Ein niedrigerer Confidence-Score kann zu mehr erkannten Objekten führen, erhöht jedoch auch die Wahrscheinlichkeit von Fehlklassifikationen.
 
+## Zusätzlich:
+Da ein YOLO-Segmentierungsmodell genutzt wird, kann flexibel zwischen Masken- und Boxen Verarbeitung gesteuert werden. Dies geschieht über die Funktion:
+```bash
+isolate_mask_in_box(img, det, show_mask=True) #show_mask=Flase (uses boxes instead of masks)
+```
+In der Praxis decken die Masken nicht immer die gesamte Instanz ab. In solchen Fällen sind die Bounding Boxen etwas robuster.
+
 ## Backend Setup
 ```bash
 cd backend
 py -3.10 -m venv venv # Create virtual environment
 venv\Scripts\activate # Activate virtual environment
 pip install -r requirements.txt # Install dependencies
-python backend.py # Start the backend
+python backend_abgabe.py # Start the backend
 ```
 > **Python Version:** Die Pipeline wurde mit Python 3.9.21 und 3.10.11 getestet. Andere Versionen können zu Kompatibilitätsproblemen mit den benötigten Bibliotheken führen.
 
@@ -41,14 +55,14 @@ Mathematische Ausdrücke werden in LaTeX-Notation ausgegeben und können in der 
 ```
 Mathematischer Beispieltext 
 Wir Betrachten die Funktion
-$f ( x ) = x ^ { 2 } - 2 x + 1$
+$f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
-dass $f ( x ) = ( x - 1 ) ^ { 2 }$ gilt.
+dass $f(x)=(x-1)^{2}$ gilt.
 Die Funktion Besitzt genau eine Hullselle.
-Bei $x = 1$ Da der quadratische
+Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
-Ungleichung $f ( x ) \geq 0 .$ 
+Ungleichung $f(x)\geq0.$ 
 ```
 
 Dicht geschriebene oder überlappende Zeilen können zu Segmentierungsfehlern führen, was sich negativ auf die Gesamtqualität der Erkennung auswirkt!
@@ -62,7 +76,11 @@ English:
 This project implements a modular HTR (Handwritten Text Recognition) pipeline that combines YOLOv11-based instance segmentation with two specialized TrOCR models to digitize German handwritten notes containing both plain text and mathematical expressions. The pipeline is integrated into a local web application with an Angular frontend and a FastAPI backend.
 
 ## Models
-The trained YOLO and TrOCR models can be downloaded here: [Link to Models](#)
+The trained YOLO model can be downloaded here: [Link to YOLO-Model](#)
+
+The finetuned TrOCR models can also be downloaded [Link zu den TrOCR-Modellen](#) , but they are currently still subject to improvement. For better results, you can alternatively use the provided TrOCR-Models by FH-SWF:
+
+[FH-SWF-Models](https://huggingface.co/fhswf)
 
 Place the model folders in the `backend` directory before starting the application.
 
@@ -71,6 +89,13 @@ Key postprocessing parameters, including confidence threshold and IoU threshold 
 ```bash
 yolo.predict(img, conf=0.5, iou=0.7, agnostic_nms=True) # conf and iou can be changed
 ```
+
+## Additionally:
+Since a YOLO segmentation model is used, it is possible to switch between mask-based and bounding box-based processing via:
+```bash
+isolate_mask_in_box(img, det, show_mask=True) #show_mask=Flase (uses boxes instead of masks)
+```
+In practice, masks may not fully cover an instance. In such cases, bounding boxes are often more robust.
 
 
 ## Backend Setup
@@ -103,14 +128,14 @@ The pipeline works best on clearly structured notes with well-separated lines an
 ```
 Mathematischer Beispieltext 
 Wir Betrachten die Funktion
-$f ( x ) = x ^ { 2 } - 2 x + 1$
+$f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
-dass $f ( x ) = ( x - 1 ) ^ { 2 }$ gilt.
+dass $f(x)=(x-1)^{2}$ gilt.
 Die Funktion Besitzt genau eine Hullselle.
-Bei $x = 1$ Da der quadratische
+Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
-Ungleichung $f ( x ) \geq 0 .$ 
+Ungleichung $f(x)\geq0.$ 
 ```
 
 Note that densely written or overlapping lines can lead to segmentation errors, which may affect the overall recognition quality.
