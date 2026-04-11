@@ -15,6 +15,7 @@ from PIL import Image
 from pathlib import Path
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 import builtins
+import re
 
 app = FastAPI()
 
@@ -62,7 +63,23 @@ model_math = VisionEncoderDecoderModel.from_pretrained(r"E:\math_trocr_hme_and_m
 #model_math = VisionEncoderDecoderModel.from_pretrained("./final_math_trocr").to(device)
 #processor_math = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
 
+LATEX_COMMANDS = [
+  "frac", "sqrt", "sum", "int", "lim", "log", "sin", "cos", "tan", "alpha", "beta",
+  "vert", "hline", "cdot", "times", "leq", "geq", "neq", "approx", "infty", "pi",
+]
 
+def fix_latex_space(text):
+  """
+  Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein.
+  Ist notwendig, damit die Befehle korrekt angezeigt werden können.
+  Args:
+    text: Erkannter LaTeX-Text, der möglicherweise die Befehle enthält.
+  Returns:
+    Text mit dem ggf. eingefügten Leerzeichen nach den LaTeX-Befehlen.
+  """
+  for cmd in LATEX_COMMANDS:
+    text = re.sub(rf'(\\{cmd})(?=[^\s{{(])', rf'\1 ', text)
+  return text
 
 def run_trocr(class_name, image):
   """
@@ -93,6 +110,7 @@ def run_trocr(class_name, image):
   generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
   if is_formula:
     #generated_text = generated_text.replace("\\", "\\\\") # Backslashes müssen escaped werden, damit sie in LaTeX korrekt dargestellt werden (z.B. Matrizen)
+    generated_text = fix_latex_space(generated_text) # Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein, damit sie korrekt dargestellt werden können
     generated_text = f"${generated_text}$"
   return generated_text
 
@@ -294,26 +312,36 @@ def remove_smaller_detection(polygons, overlap_threshold=0.8):
 
 
 def get_segments_from_polygons(mask_crop_width, inner_polygons, x, min_seg_width=40):
+    """
+    Berechnet die Segmente eines inneren Polygons innerhalb des Masken-Crops.
+    Args:
+    mask_crop_width: Breite des Masken-Crops
+    inner_polygons: Liste von Dicts mit den Infos eines inneren Polygons (min_x, max_x, etc.)
+    x: x-Koordinate des linken Rands des Crops im Originalbild, um die relativen Koordinaten der inneren Polygone zu berechnen
+    min_seg_width: Mindestbreite eines Segments, damit es als gültig betrachtet wird
+    Returns:
+    Liste von Tupeln (start, end) für die Segmente, die innerhalb eines Crops liegen
+    """
     if not inner_polygons:
         return [(0, mask_crop_width - 1)]
 
-    inner_poly = inner_polygons[0]
+    inner_poly = inner_polygons[0] #Kann ggf. erweitert werden, wenn mehrere innere Polygone berücksichtigt werden sollen (den Fall gab es in den Tests aber noch nicht)
     inner_min_x = inner_poly["min_x"]
     inner_max_x = inner_poly["max_x"]
 
-    rel_inner_min_x = max(0, inner_min_x - x)
+    rel_inner_min_x = max(0, inner_min_x - x) # Berechnet die Koordinaten des inneren Polygons, damit sie relativ zum Crop sind (x ist die x-Koordinate des linken Rands des Crops im Originalbild)
     rel_inner_max_x = min(mask_crop_width - 1, inner_max_x - x)
 
     left_width = rel_inner_min_x
     right_width = mask_crop_width - (rel_inner_max_x + 1)
 
     segments = []
-    if left_width >= min_seg_width:
+    if left_width >= min_seg_width: # Wenn der Bereich links vom inneren Polygon breit genug ist, wird er als Segment hinzugefügt
         segments.append((0, rel_inner_min_x - 1))
-    if right_width >= min_seg_width:
+    if right_width >= min_seg_width: # Wenn der Bereich rechts vom inneren Polygon breit genug ist, wird er als Segment hinzugefügt
         segments.append((rel_inner_max_x + 1, mask_crop_width - 1))
 
-    return segments or [(0, mask_crop_width - 1)]
+    return segments or [(0, mask_crop_width - 1)] # Wenn kein Segment breit genug ist, wird der gesamte Crop als Segment zurückgegeben
 
 @app.post("/upload")
 async def upload(image: UploadFile = File(...)):
@@ -327,7 +355,7 @@ async def upload(image: UploadFile = File(...)):
 
     img_h, img_w = img.shape[:2]
 
-    results = yolo.predict(img, conf=0.5, iou=0.7, agnostic_nms=True)
+    results = yolo.predict(img, conf=0.5, iou=0.7, agnostic_nms=True) # Hier können die Parameter für die NMS angepasst werden, um zu steuern, wie mit überlappenden Detections umgegangen wird
 
     objects = []
     detections = prepare_detections(results)
