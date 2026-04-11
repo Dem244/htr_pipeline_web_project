@@ -55,14 +55,14 @@ Mathematische Ausdrücke werden in LaTeX-Notation ausgegeben und können in der 
 ```
 Mathematischer Beispieltext 
 Wir Betrachten die Funktion
-$f ( x ) = x ^ { 2 } - 2 x + 1$
+$f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
-dass $f ( x ) = ( x - 1 ) ^ { 2 }$ gilt.
+dass $f(x)=(x-1)^{2}$ gilt.
 Die Funktion Besitzt genau eine Hullselle.
-Bei $x = 1$ Da der quadratische
+Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
-Ungleichung $f ( x ) \geq 0 .$ 
+Ungleichung $f(x)\geq0.$ 
 ```
 
 Dicht geschriebene oder überlappende Zeilen können zu Segmentierungsfehlern führen, was sich negativ auf die Gesamtqualität der Erkennung auswirkt!
@@ -128,14 +128,14 @@ The pipeline works best on clearly structured notes with well-separated lines an
 ```
 Mathematischer Beispieltext 
 Wir Betrachten die Funktion
-$f ( x ) = x ^ { 2 } - 2 x + 1$
+$f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
-dass $f ( x ) = ( x - 1 ) ^ { 2 }$ gilt.
+dass $f(x)=(x-1)^{2}$ gilt.
 Die Funktion Besitzt genau eine Hullselle.
-Bei $x = 1$ Da der quadratische
+Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
-Ungleichung $f ( x ) \geq 0 .$ 
+Ungleichung $f(x)\geq0.$ 
 ```
 
 Note that densely written or overlapping lines can lead to segmentation errors, which may affect the overall recognition quality.
