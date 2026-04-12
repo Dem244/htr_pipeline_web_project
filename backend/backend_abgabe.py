@@ -255,7 +255,7 @@ def isolate_mask_in_box(img, box, show_mask=True):
 
     return result
 
-def remove_smaller_detection(polygons, overlap_threshold=0.8):
+def remove_or_keep_smaller_detection(polygons, overlap_threshold=0.8):
     """
     Entfernt kleinere Detectionen polygonbasiert.
 
@@ -359,7 +359,7 @@ async def upload(image: UploadFile = File(...)):
 
     objects = []
     detections = prepare_detections(results)
-    filtered_detections = remove_smaller_detection(detections)
+    filtered_detections = remove_or_keep_smaller_detection(detections)
 
     crop_idx = 0
 
