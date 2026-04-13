@@ -58,7 +58,7 @@ Wir Betrachten die Funktion
 $f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
 dass $f(x)=(x-1)^{2}$ gilt.
-Die Funktion Besitzt genau eine Hullselle.
+Die Funktion besitzt genau eine Hullselle.
 Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
@@ -131,7 +131,7 @@ Wir Betrachten die Funktion
 $f(x)=x^{2}-2x+1$
 Durch Umformen erkannt man,
 dass $f(x)=(x-1)^{2}$ gilt.
-Die Funktion Besitzt genau eine Hullselle.
+Die Funktion besitzt genau eine Hullselle.
 Bei $x=1$ Da der quadratische
 Term stets nichtnegativ ist, gilt für 
 alle x aus den reelen Zahlen die 
