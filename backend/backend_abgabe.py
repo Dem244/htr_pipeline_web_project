@@ -66,6 +66,7 @@ model_math = VisionEncoderDecoderModel.from_pretrained(r"E:\math_trocr_hme_and_m
 LATEX_COMMANDS = [
   "frac", "sqrt", "sum", "int", "lim", "log", "sin", "cos", "tan", "alpha", "beta",
   "vert", "hline", "cdot", "times", "leq", "geq", "neq", "approx", "infty", "pi",
+  "iff", "Rightarrow", "Leftarrow"
 ]
 
 def fix_latex_space(text):
