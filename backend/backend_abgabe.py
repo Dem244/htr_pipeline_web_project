@@ -211,7 +211,7 @@ def sort_rows_and_run_ocr(masks):
     gen_text = ""
     for i, row in enumerate(rows):
       for msk in row:
-        gen_text += run_trocr(msk["label"], msk["image"]) + " "
+        gen_text += run_trocr(msk["class"], msk["image"]) + " "
       if i < len(rows) - 1: #Zeilenumbruch nur hinzufügen, wenn es nicht die letzte Zeile ist
         gen_text += "\n\n"
 
@@ -302,7 +302,7 @@ def remove_or_keep_smaller_detection(polygons, overlap_threshold=0.8):
                 inner_polygons.append({"polygon": poly2,"class": cls2,"conf": conf2,
                     "min_x": p2["min_x"],"min_y": p2["min_y"],"max_x": p2["max_x"],"max_y": p2["max_y"],"avg_y": p2["avg_y"]})
 
-        min_x, min_y, max_x, max_y = map(int, poly1.bounds)
+        #min_x, min_y, max_x, max_y = map(int, poly1.bounds)
         # Originale Box-Koordinaten beibehalten, für den Vergleich zwischen Masken und Boxen
         filtered_polygons.append({"polygon": poly1,"class": cls1, "conf": conf1, "min_x": p1["min_x"],
                     "min_y": p1["min_y"], "max_x": p1["max_x"], "max_y": p1["max_y"], "avg_y": p1["avg_y"], "orig_min_x": p1["orig_min_x"],
@@ -406,7 +406,7 @@ async def upload(image: UploadFile = File(...)):
             abs_min_y = y1 + seg_top
             abs_max_y = y1 + seg_bottom
 
-            objects.append({ "label": label, "min_x": abs_min_x, "max_x": abs_max_x, "min_y": abs_min_y,
+            objects.append({ "class": label, "min_x": abs_min_x, "max_x": abs_max_x, "min_y": abs_min_y,
                 "max_y": abs_max_y, "avg_y": (abs_min_y + abs_max_y) / 2, "image": seg_img
             })
 
