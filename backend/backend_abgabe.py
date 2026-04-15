@@ -22,7 +22,7 @@ app = FastAPI()
 # CORS-Konfiguration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Angular Dev-Server
+    allow_origins=["http://localhost:4200"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,16 +50,16 @@ os.makedirs(output_dir, exist_ok=True)
 
 
 #yolo = YOLO("trained_yolo/weights/best.pt")
-yolo = YOLO("new_yolo_febr/weights/best.pt")
+yolo = YOLO("...")  # Hier den Pfad zum best.pt setzen
 yolo.to(device)
 
 # Text OCR
-processor_text = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
+processor_text = TrOCRProcessor.from_pretrained("...") #Pfad zum TrOCR-Ordner
 #model_text = VisionEncoderDecoderModel.from_pretrained("trocr_fine_tuned").to(device)
-model_text = VisionEncoderDecoderModel.from_pretrained("final_text_trocr").to(device)
+model_text = VisionEncoderDecoderModel.from_pretrained("...").to(device) #Pfad zum TrOCR-Ordner
 # Math OCR
-processor_math = TrOCRProcessor.from_pretrained("microsoft/trocr-large-stage1")
-model_math = VisionEncoderDecoderModel.from_pretrained(r"E:\math_trocr_hme_and_mathwriting").to(device)
+processor_math = TrOCRProcessor.from_pretrained("...")
+model_math = VisionEncoderDecoderModel.from_pretrained("...").to(device)
 #model_math = VisionEncoderDecoderModel.from_pretrained("./final_math_trocr").to(device)
 #processor_math = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
 
@@ -68,52 +68,6 @@ LATEX_COMMANDS = [
   "vert", "hline", "cdot", "times", "leq", "geq", "neq", "approx", "infty", "pi",
   "iff", "Rightarrow", "Leftarrow"
 ]
-
-def fix_latex_space(text):
-  """
-  Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein.
-  Ist notwendig, damit die Befehle korrekt angezeigt werden können.
-  Args:
-    text: Erkannter LaTeX-Text, der möglicherweise die Befehle enthält.
-  Returns:
-    Text mit dem ggf. eingefügten Leerzeichen nach den LaTeX-Befehlen.
-  """
-  for cmd in LATEX_COMMANDS:
-    text = re.sub(rf'(\\{cmd})(?=[^\s{{(])', rf'\1 ', text)
-  return text
-
-def run_trocr(class_name, image):
-  """
-  Führt OCR mit TrOCR durch, abhängig von der Klasse (Formel oder Text).
-
-  Args:
-    class_name: Klassenname ("Formula" oder "Textline")
-    image: Bild, auf dem Texterkennung durchgeführt werden soll
-
-  Returns:
-    str: Erkanntes Text- oder Formel-Ergebnis
-  """
-  is_formula = False
-
-  if "Formula" == class_name:
-    processor = processor_math
-    model = model_math
-    is_formula = True
-  else:
-    processor = processor_text
-    model = model_text
-    is_formula = False
-
-  pixel = processor(images=image, return_tensors="pt").pixel_values
-  pixel = pixel.to(device)
-
-  generated_ids = model.generate(pixel)
-  generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-  if is_formula:
-    #generated_text = generated_text.replace("\\", "\\\\") # Backslashes müssen escaped werden, damit sie in LaTeX korrekt dargestellt werden (z.B. Matrizen)
-    generated_text = fix_latex_space(generated_text) # Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein, damit sie korrekt dargestellt werden können
-    generated_text = f"${generated_text}$"
-  return generated_text
 
 
 def prepare_detections(results):
@@ -145,7 +99,7 @@ def prepare_detections(results):
             if not polygon.is_valid: # Manchmal können die Polygone ungültig sein (z.B. Self Intersections), daher mit buffer reparieren
               polygon = polygon.buffer(0) # Entfernt Self Intersections, kann zu MultiPolygons durchführen
             if polygon.geom_type == "MultiPolygon":
-              polygon = max(polygon.geoms, key=lambda g: g.area)
+              polygon = max(polygon.geoms, key=lambda g: g.area) # Größtes Polygon wählen
 
             _, poly_y1, _, poly_y2 = map(int, polygon.bounds) # Bounds liefert x_min, etc. vom Polygon
 
@@ -163,98 +117,6 @@ def prepare_detections(results):
 
     return boxes_out
 
-def mask_overlap(mask1, mask2):
-    """
-    Überprüft, ob zwei Masken sich vertikal überlappen.
-    Die Überlappungbasiert auf einem Schwellenwert, der 30% der durchschnittlichen Höhe der beiden Masken beträgt.
-    Args:
-    mask1: Dict mit Informationen zur ersten Masken (min_x, max_x, min_y, max_y, avg_y)
-    mask2: mit Informationen zur zweiten Masken (min_x, max_x, min_y, max_y, avg_y)
-    Returns:
-    bool: True, wenn die Masken sich vertikal überlappen, False sonst.
-    """
-    avg_height = (mask1["max_y"] - mask1["min_y"] + mask2["max_y"] - mask2["min_y"]) / 2
-    #threshold = max(50, avg_height * 0.3) # Je nach Höhe der Masken entweder 30% der durchschnittlichen Höhe oder mindestens 50 Pixel Abstand erlauben
-    threshold = avg_height * 0.35
-    dist = abs(mask1["avg_y"] - mask2["avg_y"])
-    #print(f"[{mask1['label']}] avg_y={mask1['avg_y']:.1f} <-> [{mask2['label']}] avg_y={mask2['avg_y']:.1f} | Abstand={distance:.1f}, threshold={threshold:.1f}, avg_height={avg_height:.1f}")
-
-    return dist <= threshold
-
-
-def sort_rows_and_run_ocr(masks):
-    """
-    Gruppiert die Masken in Zeilen, sortiert sie und führt OCR aus.overlap_threshold
-
-    Args:
-      masks: Liste von Dicts mit den Maskeninformationen.overlap_threshold
-
-    Returns:
-      str: Generierter Text aus den erkannten Objekten, gruppiert nach Zeilen
-    """
-    rows = [] # Liste für Zeilen
-
-    for msk in sorted(masks, key=lambda m: m["min_y"]): # Oberste Maske zuerst
-      in_row = False #Statusvariable, ob die aktuelle Maske bereits einer Zeile zugeordnet wurde
-      for row in rows:
-        if any(mask_overlap(msk, other_masks) for other_masks in row):
-          row.append(msk)
-          in_row = True
-          break
-      if not in_row: #wenn die Maske in keiner bestehenden Zeile liegt, neue Zeile erstellen
-        rows.append([msk])
-
-    for row in rows:
-      row.sort(key=lambda msk: msk["min_x"])
-
-
-    gen_text = ""
-    for i, row in enumerate(rows):
-      for msk in row:
-        gen_text += run_trocr(msk["class"], msk["image"]) + " "
-      if i < len(rows) - 1: #Zeilenumbruch nur hinzufügen, wenn es nicht die letzte Zeile ist
-        gen_text += "\n\n"
-
-    return gen_text
-
-
-
-
-
-
-# https://docs.ultralytics.com/guides/isolating-segmentation-objects/#full-example-code
-def isolate_mask_in_box(img, box, show_mask=True):
-    """
-      Isoliert die Maske innerhalb der Box, indem sie die Pixel außerhalb der Maske weiß färbt.
-      Args:
-      img: Bild als NumPy-Array
-      box: Dict mit Informationen zur Box und Maske
-      show_mask: Bool, ob die Maske angezeigt werden soll (True) oder nur der Box-Crop (False)
-      Returns:
-      result: Bildausschnitt mit isolierter Maske oder Box-Crop
-    """
-    x1, y1, x2, y2 = box["min_x"], box["min_y"], box["max_x"], box["max_y"]
-    img_crop = img[y1:y2, x1:x2].copy()
-
-    if not show_mask:
-        return img_crop
-
-    b_mask = np.zeros(img.shape[:2], dtype=np.uint8) # erstellt eine leere schwarze Maske in der Größe des Originalbildes
-
-    contour = np.array(box["polygon"].exterior.coords, dtype=np.int32).reshape(-1, 1, 2)
-    cv2.drawContours(b_mask, [contour], -1, 255, cv2.FILLED) #zeichnet die Kontur des Polygons auf die Maske, gefüllt mit weiß (255)
-
-    # Maske etwas erweitern, damit auch bspw. bei Formeln die Ränder mit erfasst werden (z.B. Brüche, Wurzeln, etc.)
-    kernel_size = 20
-    kernel = np.ones((kernel_size, kernel_size), np.uint8)
-    b_mask = cv2.dilate(b_mask, kernel, iterations=1)
-
-    mask_crop = b_mask[y1:y2, x1:x2]
-
-    result = np.full_like(img_crop, 255) #erstellt ein neues Bild mit der gleichen Größe wie der Crop, gefüllt mit weißen Pixeln
-    result[mask_crop > 0] = img_crop[mask_crop > 0] #kopiert die Pixel aus dem Crop in das Ergebnis, aber nur dort, wo die Maske weiß ist (mask_crop > 0)
-
-    return result
 
 def remove_or_keep_smaller_detection(polygons, overlap_threshold=0.8):
     """
@@ -311,6 +173,39 @@ def remove_or_keep_smaller_detection(polygons, overlap_threshold=0.8):
 
     return filtered_polygons
 
+# https://docs.ultralytics.com/guides/isolating-segmentation-objects/#full-example-code
+def isolate_mask_in_box(img, box, show_mask=True):
+    """
+      Isoliert die Maske innerhalb der Box, indem sie die Pixel außerhalb der Maske weiß färbt.
+      Args:
+      img: Bild als NumPy-Array
+      box: Dict mit Informationen zur Box und Maske
+      show_mask: Bool, ob die Maske angezeigt werden soll (True) oder nur der Box-Crop (False)
+      Returns:
+      result: Bildausschnitt mit isolierter Maske oder Box-Crop
+    """
+    x1, y1, x2, y2 = box["min_x"], box["min_y"], box["max_x"], box["max_y"]
+    img_crop = img[y1:y2, x1:x2].copy()
+
+    if not show_mask:
+        return img_crop
+
+    b_mask = np.zeros(img.shape[:2], np.uint8) # erstellt eine leere schwarze Maske in der Größe des Originalbildes
+
+    contour = np.array(box["polygon"].exterior.coords, dtype=np.int32).reshape(-1, 1, 2)
+    cv2.drawContours(b_mask, [contour], -1, 255, cv2.FILLED) #zeichnet die Kontur des Polygons auf die Maske, gefüllt mit weiß (255)
+
+    # Maske etwas erweitern, damit auch bspw. bei Formeln die Ränder mit erfasst werden (z.B. Brüche, Wurzeln, etc.)
+    kernel_size = 20
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    b_mask = cv2.dilate(b_mask, kernel, iterations=1)
+
+    mask_crop = b_mask[y1:y2, x1:x2] # Die Maske auf Größe des Crops zuschneiden
+
+    result = np.full_like(img_crop, 255) #erstellt ein neues Bild mit der gleichen Größe wie der Crop, gefüllt mit weißen Pixeln
+    result[mask_crop > 0] = img_crop[mask_crop > 0] # Nur wo die Maske weiß ist werden die echten Pixel aus dem Crop übernommen, der Rest bleibt weiß
+
+    return result
 
 def get_segments_from_polygons(mask_crop_width, inner_polygons, x, min_seg_width=40):
     """
@@ -324,7 +219,7 @@ def get_segments_from_polygons(mask_crop_width, inner_polygons, x, min_seg_width
     Liste von Tupeln (start, end) für die Segmente, die innerhalb eines Crops liegen
     """
     if not inner_polygons:
-        return [(0, mask_crop_width - 1)]
+        return [(0, mask_crop_width - 1)] # -1 verhindert Indexfehler (Anfang bei 0)
 
     inner_poly = inner_polygons[0] #Kann ggf. erweitert werden, wenn mehrere innere Polygone berücksichtigt werden sollen (den Fall gab es in den Tests aber noch nicht)
     inner_min_x = inner_poly["min_x"]
@@ -334,7 +229,7 @@ def get_segments_from_polygons(mask_crop_width, inner_polygons, x, min_seg_width
     rel_inner_max_x = min(mask_crop_width - 1, inner_max_x - x)
 
     left_width = rel_inner_min_x
-    right_width = mask_crop_width - (rel_inner_max_x + 1)
+    right_width = mask_crop_width - (rel_inner_max_x + 1) #+1 weil Koor bei 0 beginnt
 
     segments = []
     if left_width >= min_seg_width: # Wenn der Bereich links vom inneren Polygon breit genug ist, wird er als Segment hinzugefügt
@@ -343,6 +238,106 @@ def get_segments_from_polygons(mask_crop_width, inner_polygons, x, min_seg_width
         segments.append((rel_inner_max_x + 1, mask_crop_width - 1))
 
     return segments or [(0, mask_crop_width - 1)] # Wenn kein Segment breit genug ist, wird der gesamte Crop als Segment zurückgegeben
+
+def mask_overlap(mask1, mask2):
+    """
+    Überprüft, ob zwei Masken sich vertikal überlappen.
+    Die Überlappungbasiert auf einem Schwellenwert, der 35% der durchschnittlichen Höhe der beiden Masken beträgt.
+    Args:
+    mask1: Dict mit Informationen zur ersten Masken (min_x, max_x, min_y, max_y, avg_y)
+    mask2: mit Informationen zur zweiten Masken (min_x, max_x, min_y, max_y, avg_y)
+    Returns:
+    bool: True, wenn die Masken sich vertikal überlappen, False sonst.
+    """
+    avg_height = (mask1["max_y"] - mask1["min_y"] + mask2["max_y"] - mask2["min_y"]) / 2
+    threshold = avg_height * 0.35 # Kann angepasst werden
+    dist = abs(mask1["avg_y"] - mask2["avg_y"])
+    #print(f"[{mask1['label']}] avg_y={mask1['avg_y']:.1f} <-> [{mask2['label']}] avg_y={mask2['avg_y']:.1f} | Abstand={distance:.1f}, threshold={threshold:.1f}, avg_height={avg_height:.1f}")
+
+    return dist <= threshold
+
+def fix_latex_space(text):
+  """
+  Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein.
+  Ist notwendig, damit die Befehle korrekt angezeigt werden können.
+  Args:
+    text: Erkannter LaTeX-Text, der möglicherweise die Befehle enthält.
+  Returns:
+    Text mit dem ggf. eingefügten Leerzeichen nach den LaTeX-Befehlen.
+  """
+  for cmd in LATEX_COMMANDS:
+    text = re.sub(rf'(\\{cmd})(?=[^\s{{(])', rf'\1 ', text)
+  return text
+
+def run_trocr(class_name, image):
+  """
+  Führt OCR mit TrOCR durch, abhängig von der Klasse (Formel oder Text).
+
+  Args:
+    class_name: Klassenname ("Formula" oder "Textline")
+    image: Bild, auf dem Texterkennung durchgeführt werden soll
+
+  Returns:
+    generated_text: Erkanntes Text- oder Formel-Ergebnis
+  """
+  is_formula = False
+
+  if "Formula" == class_name:
+    processor = processor_math
+    model = model_math
+    is_formula = True
+  else:
+    processor = processor_text
+    model = model_text
+    is_formula = False
+
+  pixel = processor(images=image, return_tensors="pt").pixel_values
+  pixel = pixel.to(device)
+
+  generated_ids = model.generate(pixel)
+  generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+  if is_formula:
+    #generated_text = generated_text.replace("\\", "\\\\") # Backslashes müssen escaped werden, damit sie in LaTeX korrekt dargestellt werden (z.B. Matrizen)
+    generated_text = fix_latex_space(generated_text) # Fügt nach bestimmten LaTeX-Befehlen ein Leerzeichen ein, damit sie korrekt dargestellt werden können
+    generated_text = f"${generated_text}$"
+  return generated_text
+
+
+
+def sort_rows_and_run_ocr(masks):
+    """
+    Gruppiert die Masken in Zeilen, sortiert sie und führt OCR aus.overlap_threshold
+
+    Args:
+      masks: Liste von Dicts mit den Maskeninformationen.overlap_threshold
+
+    Returns:
+      str: Generierter Text aus den erkannten Objekten, gruppiert nach Zeilen
+    """
+    rows = [] # Liste für Zeilen
+
+    for msk in sorted(masks, key=lambda m: m["min_y"]): # Oberste Maske zuerst
+      in_row = False #Statusvariable, ob die aktuelle Maske bereits einer Zeile zugeordnet wurde
+      for row in rows:
+        if any(mask_overlap(msk, other_masks) for other_masks in row): #Falls Überlappung gefunden wurde
+          row.append(msk)
+          in_row = True
+          break
+      if not in_row: #wenn die Maske in keiner bestehenden Zeile liegt, neue Zeile erstellen
+        rows.append([msk])
+
+    for row in rows:
+      row.sort(key=lambda msk: msk["min_x"])
+
+
+    gen_text = ""
+    for i, row in enumerate(rows):
+      for msk in row:
+        gen_text += run_trocr(msk["class"], msk["image"]) + " "
+      if i < len(rows) - 1: #Zeilenumbruch nur hinzufügen, wenn es nicht die letzte Zeile ist
+        gen_text += "\n\n"
+
+    return gen_text
 
 @app.post("/upload")
 async def upload(image: UploadFile = File(...)):
@@ -376,22 +371,22 @@ async def upload(image: UploadFile = File(...)):
             continue
 
         img_crop = isolate_mask_in_box(img, det, show_mask=True) #Steuern zwischen Box-Crop und Masken-Crop
-        crop_w = img_crop.shape[1]
+        crop_w = img_crop.shape[1] #Breite des Crops
 
         segments = get_segments_from_polygons(crop_w, det["inner_polygons"], x1, min_seg_width=50)
 
         for seg_start, seg_end in segments:
 
-            seg_img = img_crop[:, seg_start:seg_end + 1] # Bereich des Crops entsprechend der Segmentierung zuschneiden
+            seg_img = img_crop[:, seg_start:seg_end + 1] # horizontal auf das Segment zuschneiden (: alle Zeilen, seg_start bis seg_end Spalten)
 
             # vertikal leere Ränder anhand des Bildinhalts reduzieren
-            gray = cv2.cvtColor(seg_img, cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(seg_img, cv2.COLOR_BGR2GRAY) #In Graustufen konvertieren, um die Zeilen analysieren zu können (weiße Zeile heißt kein Inhalt)
             nonwhite_rows = np.where(np.min(gray, axis=1) < 250)[0] #Zeilen, die nicht komplett weiß sind
 
-            if nonwhite_rows.size == 0:
+            if nonwhite_rows.size == 0: # also alle Zeilen weiß, dann überspringen (kein Inhalt)
                 continue
 
-            seg_top, seg_bottom = nonwhite_rows[0], nonwhite_rows[-1] #erste und letzte Zeile, die nicht komplett weiß ist
+            seg_top, seg_bottom = nonwhite_rows[0], nonwhite_rows[-1] #erste und letzte Zeile, die nicht komplett weiß ist (also Inhalt hat)
             seg_img = seg_img[seg_top:seg_bottom + 1] #vertikal auf den Bereich zuschneiden, der Inhalt hat
 
             # Crops speichern für Debugging-Zwecke
