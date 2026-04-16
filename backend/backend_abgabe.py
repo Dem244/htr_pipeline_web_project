@@ -14,6 +14,7 @@ from shapely.ops import unary_union
 from PIL import Image
 from pathlib import Path
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+from huggingface_hub import hf_hub_download
 import builtins
 import re
 
@@ -22,7 +23,7 @@ app = FastAPI()
 # CORS-Konfiguration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  
+    allow_origins=["http://localhost:4200"],  # Angular Dev-Server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,16 +51,19 @@ os.makedirs(output_dir, exist_ok=True)
 
 
 #yolo = YOLO("trained_yolo/weights/best.pt")
-yolo = YOLO("...")  # Hier den Pfad zum best.pt setzen
+model_path = hf_hub_download(repo_id="fhswf/yolov11_htr_seg", filename="weights/best.pt")
+
+# YOLO laden
+yolo = YOLO(model_path)
 yolo.to(device)
 
 # Text OCR
-processor_text = TrOCRProcessor.from_pretrained("...") #Pfad zum TrOCR-Ordner
+processor_text = TrOCRProcessor.from_pretrained(r"E:\text_trocr_aug")
 #model_text = VisionEncoderDecoderModel.from_pretrained("trocr_fine_tuned").to(device)
-model_text = VisionEncoderDecoderModel.from_pretrained("...").to(device) #Pfad zum TrOCR-Ordner
+model_text = VisionEncoderDecoderModel.from_pretrained(r"E:\text_trocr_aug").to(device)
 # Math OCR
-processor_math = TrOCRProcessor.from_pretrained("...")
-model_math = VisionEncoderDecoderModel.from_pretrained("...").to(device)
+processor_math = TrOCRProcessor.from_pretrained(r"E:\math_trocr_hme_and_mathwriting")
+model_math = VisionEncoderDecoderModel.from_pretrained(r"E:\math_trocr_hme_and_mathwriting").to(device)
 #model_math = VisionEncoderDecoderModel.from_pretrained("./final_math_trocr").to(device)
 #processor_math = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
 
