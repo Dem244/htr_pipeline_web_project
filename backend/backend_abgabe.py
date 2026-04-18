@@ -23,7 +23,7 @@ app = FastAPI()
 # CORS-Konfiguration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Angular Dev-Server
+    allow_origins=["http://localhost:4200"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,14 +58,12 @@ yolo = YOLO(model_path)
 yolo.to(device)
 
 # Text OCR
-processor_text = TrOCRProcessor.from_pretrained(r"E:\text_trocr_aug")
-#model_text = VisionEncoderDecoderModel.from_pretrained("trocr_fine_tuned").to(device)
-model_text = VisionEncoderDecoderModel.from_pretrained(r"E:\text_trocr_aug").to(device)
+processor_text = TrOCRProcessor.from_pretrained("fhswf/htr_ger_text_trocr")
+model_text = VisionEncoderDecoderModel.from_pretrained("fhswf/htr_ger_text_trocr").to(device)
 # Math OCR
-processor_math = TrOCRProcessor.from_pretrained(r"E:\math_trocr_hme_and_mathwriting")
-model_math = VisionEncoderDecoderModel.from_pretrained(r"E:\math_trocr_hme_and_mathwriting").to(device)
-#model_math = VisionEncoderDecoderModel.from_pretrained("./final_math_trocr").to(device)
-#processor_math = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten")
+processor_math = TrOCRProcessor.from_pretrained("fhswf/htr_math_trocr")
+model_math = VisionEncoderDecoderModel.from_pretrained("fhswf/htr_math_trocr").to(device)
+
 
 LATEX_COMMANDS = [
   "frac", "sqrt", "sum", "int", "lim", "log", "sin", "cos", "tan", "alpha", "beta",
