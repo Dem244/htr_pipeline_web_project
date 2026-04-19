@@ -72,6 +72,13 @@ Ungleichung $f(x)\geq0.$
 
 Dicht geschriebene oder überlappende Zeilen können zu Segmentierungsfehlern führen, was sich negativ auf die Gesamtqualität der Erkennung auswirkt!
 
+## PDF-Server Setup (optional)
+Falls ein Export der Ergebnisse als PDF durchgeführt werden möchte:
+```bash
+cd pdf-server
+node server.js
+```
+
 English:
 
 # HTR-Pipeline for German Handwritten Text with Mathematical Expressions
