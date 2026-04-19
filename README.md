@@ -8,13 +8,18 @@ Die Pipeline ist in eine lokale Webanwendung integriert, bestehend aus einem Ang
 ## Modelle
 Das trainiere YOLO-Modell ist kann hier runtergeladen werden [Link zm YOLO Modell](https://huggingface.co/fhswf/yolov11_htr_seg)
 
-Die fine-tuned TrOCR-Modelle können ebenfalls runtergeladen werden [Link zu den TrOCR-Modellen](#) , sind jedoch aktuell noch verbesserungswürdig. Für bessere Ergebnisse können alternativ die TrOCR-Modelle der FH-SWF genutzt werden: 
+Die fine-tuned TrOCR-Modelle können ebenfalls runtergeladen werden:
+[Text-TrOCR](https://huggingface.co/fhswf/htr_ger_text_trocr)
+[Math-TrOCR](https://huggingface.co/fhswf/htr_math_trocr)
 
-[FH-SWF-Modelle](https://huggingface.co/fhswf)
+Die Modelle können auch ausgetauscht werden, dazu kann hier das Verzeichnis angepasst werden:
 
-Die Modellordner vor dem Start der Anwendung im backend-Verzeichnis ablegen!
-
-
+```bash
+model_path = hf_hub_download(repo_id="fhswf/yolov11_htr_seg", filename="weights/best.pt")
+...
+processor_text = TrOCRProcessor.from_pretrained("...")
+model_text = VisionEncoderDecoderModel.from_pretrained("...").to(device)
+```
 
 
 ## Postprocessing-Parameter:
@@ -76,11 +81,20 @@ English:
 This project implements a modular HTR (Handwritten Text Recognition) pipeline that combines YOLOv11-based instance segmentation with two specialized TrOCR models to digitize German handwritten notes containing both plain text and mathematical expressions. The pipeline is integrated into a local web application with an Angular frontend and a FastAPI backend.
 
 ## Models
-The trained YOLO model can be downloaded here: [Link to YOLO-Model](#)
+The trained YOLO model can be downloaded here: [Link to YOLO-Model](https://huggingface.co/fhswf/yolov11_htr_seg)
 
-The finetuned TrOCR models can also be downloaded [Link zu den TrOCR-Modellen](#) , but they are currently still subject to improvement. For better results, you can alternatively use the provided TrOCR-Models by FH-SWF:
+The fine-tuned TrOCR models can also be downloaded:
+[Text-TrOCR](https://huggingface.co/fhswf/htr_ger_text_trocr)
+[Math-TrOCR](https://huggingface.co/fhswf/htr_math_trocr)
 
-[FH-SWF-Models](https://huggingface.co/fhswf)
+The models can also be replaced by adjusting the paths here:
+
+```bash
+model_path = hf_hub_download(repo_id="fhswf/yolov11_htr_seg", filename="weights/best.pt")
+...
+processor_text = TrOCRProcessor.from_pretrained("...")
+model_text = VisionEncoderDecoderModel.from_pretrained("...").to(device)
+```
 
 Place the model folders in the `backend` directory before starting the application.
 
