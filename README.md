@@ -52,7 +52,7 @@ python backend_abgabe.py # Start the backend
 Erfordert [Node.js and npm](https://nodejs.org/).
 
 ```bash
-ng serve # starts the angular frontend (local 4200)
+ng serve # starts the angular frontend (local 4200) (command in htr_pipeline_web_project-Folder)
 ```
 
 
