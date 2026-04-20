@@ -36,6 +36,13 @@ isolate_mask_in_box(img, det, show_mask=True) #show_mask=Flase (uses boxes inste
 ```
 In der Praxis decken die Masken nicht immer die gesamte Instanz ab. In solchen Fällen sind die Bounding Boxen etwas robuster.
 
+## Frontend Setup
+Erfordert [Node.js and npm](https://nodejs.org/).
+
+```bash
+ng serve
+```
+
 ## Backend Setup
 ```bash
 cd backend
@@ -48,8 +55,7 @@ python backend_abgabe.py # Start the backend
 
 > **GPU:** Eine CUDA-fähige NVIDIA-GPU wird empfohlen, da die Pipeline große TrOCR-Modelle verwendet, die auf der CPU deutlich langsamer laufen können. Falls nötig, installiere die passende PyTorch-Version für deine GPU via [pytorch.org/get-started/locally](https://pytorch.org/get-started/locally/) und entferne anschließend die Zeile `torch` via `pip uninstall torch torchvision torchaudio -y` aus der `requirements.txt`.
 
-## Frontend Setup
-Erfordert [Node.js and npm](https://nodejs.org/).
+
 
 ## Beispiele & Einschränkungen
 Die Pipeline funktioniert am besten bei klar strukturierten Notizen mit gut getrennten Zeilen und eindeutig erkennbaren mathematischen Ausdrücken.
