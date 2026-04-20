@@ -46,6 +46,10 @@ python backend_abgabe.py # Start the backend
 ```
 > **Python Version:** Die Pipeline wurde mit Python 3.9.21 und 3.10.11 getestet. Andere Versionen können zu Kompatibilitätsproblemen mit den benötigten Bibliotheken führen.
 > **Hinweis zu den Modellen**: Da sich die Modelle in privaten Repos befinden, muss ein Token erstellt werden, um sie runterladen zu können!
+```bash
+huggingface-cli login # to download the models enter the created token
+```
+
 
 > **GPU:** Eine CUDA-fähige NVIDIA-GPU wird empfohlen, da die Pipeline große TrOCR-Modelle verwendet, die auf der CPU deutlich langsamer laufen können. Falls nötig, installiere die passende PyTorch-Version für deine GPU via [pytorch.org/get-started/locally](https://pytorch.org/get-started/locally/) und entferne anschließend die Zeile `torch` via `pip uninstall torch torchvision torchaudio -y` aus der `requirements.txt`.
 
