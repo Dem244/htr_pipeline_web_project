@@ -59,8 +59,7 @@ pdf-server/node_modules/
 pdf-server/package-lock.json
 pdf-server/package.json
 
-#Environment variables
-src/enviroments
+
 
 
 
