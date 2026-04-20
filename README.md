@@ -6,7 +6,7 @@ Dieses Projekt implementiert eine modulare HTR-Pipeline (Handwritten Text Recogn
 Die Pipeline ist in eine lokale Webanwendung integriert, bestehend aus einem Angular-Frontend und einem FastAPI-Backend.
 
 ## Modelle
-Das trainiere YOLO-Modell ist kann hier runtergeladen werden [Link zm YOLO Modell](https://huggingface.co/fhswf/yolov11_htr_seg)
+Das trainierte YOLO-Modell kann hier runtergeladen werden [Link zm YOLO Modell](https://huggingface.co/fhswf/yolov11_htr_seg)
 
 Die fine-tuned TrOCR-Modelle können ebenfalls runtergeladen werden:
 [Text-TrOCR](https://huggingface.co/fhswf/htr_ger_text_trocr)
