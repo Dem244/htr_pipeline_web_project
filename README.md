@@ -46,7 +46,7 @@ python backend_abgabe.py # Start the backend
 ```
 > **Python Version:** Die Pipeline wurde mit Python 3.9.21 und 3.10.11 getestet. Andere Versionen können zu Kompatibilitätsproblemen mit den benötigten Bibliotheken führen.
 
-> **Hinweis zu den Modellen**: Da sich die Modelle in privaten Repos befinden, muss ein Token erstellt werden, um sie runterladen zu können!
+> **Hinweis zu den Modellen**: Da sich die Modelle in privaten Repos (Zugriff nur für FHSWF-Huggingface Mitglieder) befinden, muss ein Token erstellt werden, um sie runterladen zu können!
 ```bash
 huggingface-cli login # to download the models enter the created token
 ```
@@ -58,6 +58,7 @@ huggingface-cli login # to download the models enter the created token
 Erfordert [Node.js and npm](https://nodejs.org/).
 
 ```bash
+npm install
 ng serve # starts the angular frontend (local 4200) (command in htr_pipeline_web_project-Folder)
 ```
 
